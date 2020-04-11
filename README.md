@@ -12,7 +12,7 @@ version: '3'
 services:
   plexdrive:
     container_name: plexdrive
-    image: ghtsto/plexdrive
+    image: ghtsto/plexdrive-encfs
     restart: always
     network_mode: "bridge"
     volumes:
