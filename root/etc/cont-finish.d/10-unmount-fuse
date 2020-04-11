@@ -3,3 +3,5 @@
 # unmount fuse
 fusermount -uz /data
 fusermount -uz /cloud
+fusermount -uz /data-decrypted
+fusermount -uz /local-decrypted
