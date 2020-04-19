@@ -58,7 +58,4 @@ COPY root/ /
 
 ENV UFS_USER_OPTS "cow,direct_io,nonempty,auto_cache,sync_read"
 
-VOLUME /config /cache /log /cloud /data
-WORKDIR /data
-
 ENTRYPOINT ["/init"]

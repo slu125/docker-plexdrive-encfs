@@ -1,35 +1,35 @@
 #!/usr/bin/with-contenv bash
 
-if mountpoint -q /local; then
+if mountpoint -q /local-encrypted; then
 
     sleep 5
 
-    while [ -z "$(findmnt /cloud | grep fuse)" ]; do 
-        echo "Waiting for plexdrive mounted at /cloud. Retrying in 30s ..."
+    while [ -z "$(findmnt /cloud-encrypted | grep fuse)" ]; do 
+        echo "Waiting for plexdrive mounted at /cloud-encrypted. Retrying in 30s ..."
         sleep 30
     done
 
-    cloud_dir="/cloud"
+    cloud_dir="/cloud-encrypted"
     if [ ! -z ${PLEXDRIVE_PATH} ]; then
         cloud_dir="${cloud_dir}$(echo "${PLEXDRIVE_PATH}" | tr -d '"' | tr -d "'")"
     fi
 
-    if [ $(findmnt /data-decrypted | grep fuse.encfs | wc -l) == "0" ]; then
-        ENCFS6_CONFIG="/encfs.xml" /usr/bin/encfs -v --extpass="/bin/cat /encfspass" /cloud /data-decrypted
+    if [ $(findmnt /cloud-decrypted | grep fuse.encfs | wc -l) == "0" ]; then
+        ENCFS6_CONFIG="/encfs/encfs.xml" /usr/bin/encfs -o uid=${PUID:-911},gid=${PGID:-911},umask=022,allow_other -v --extpass="/bin/cat /encfs/encfspass" /cloud-encrypted /cloud-decrypted
     fi
 
     if [ $(findmnt /local-decrypted | grep fuse.encfs | wc -l) == "0" ]; then
-        ENCFS6_CONFIG="/encfs.xml" /usr/bin/encfs -v --extpass="/bin/cat /encfspass" /local /local-decrypted
+        ENCFS6_CONFIG="/encfs/encfs.xml" /usr/bin/encfs -o uid=${PUID:-911},gid=${PGID:-911},umask=022,allow_other -v --extpass="/bin/cat /encfs/encfspass" /local-encrypted /local-decrypted
     fi
 
 
     # Mount if not already mounted
-    if [ $(findmnt /data | grep fuse.unionfs | wc -l) == "0" ]; then
+    if [ $(findmnt /unionfs | grep fuse.unionfs | wc -l) == "0" ]; then
         ufs_basic_opts="-o uid=${PUID:-911},gid=${PGID:-911},umask=022,allow_other"
         IFS=" " read -r -a ufs_user_opts <<< "$UFS_USER_OPTS"
-        ufs_branches="/local-decrypted=RW:/data-decrypted=RO"
+        ufs_branches="/local-decrypted=RW:/cloud-decrypted=RO"
 
-        mount_command="unionfs ${ufs_basic_opts} -o ${ufs_user_opts} ${ufs_branches} /data"
+        mount_command="unionfs ${ufs_basic_opts} -o ${ufs_user_opts} ${ufs_branches} /unionfs"
         echo "executing => $mount_command"
         exec $mount_command
     fi

@@ -8,14 +8,10 @@ while [ ! -f "/config/config.json" ] || [ ! -f "/config/token.json" ]; do
 done
 
 echo "*** checking mountpoint"
-pd_mountpoint=$(if ! mountpoint -q /local; then echo /data; else echo /cloud; fi)
-while [ $(findmnt ${pd_mountpoint} | grep fuse | wc -l) != "0" ]; do
-	echo "mountpoint (${pd_mountpoint}) already mounted. Retrying in 15s ..."
+while [ $(findmnt /cloud-encrypted | grep fuse | wc -l) != "0" ]; do
+	echo "mountpoint (/cloud-encrypted) already mounted. Retrying in 15s ..."
 	sleep 15
 done
-
-# permissions
-chown -R abc:abc /config /cache /log /cloud /data /data-decrypted /local-decrypted
 
 # display version
 echo "*** plexdrive $(plexdrive --version) ready!"
