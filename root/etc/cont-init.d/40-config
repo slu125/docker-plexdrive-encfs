@@ -1,8 +1,9 @@
 #!/usr/bin/with-contenv bash
 
 # make folders
-mkdir -p /config /cache /log /cloud /data /local /data-decrypted /local-decrypted
+mkdir -p /cloud-encrypted /cloud-decrypted /local-decrypted
 
-# permissions
-chown -R abc:abc /config /cache /log /cloud /data /data-decrypted /local-decrypted
+# change permissions
+chown -R abc:abc /config /cloud-encrypted /cloud-decrypted /local-encrypted /local-decrypted /unionfs
+
 chmod a+x /usr/bin/plexdrive_setup
