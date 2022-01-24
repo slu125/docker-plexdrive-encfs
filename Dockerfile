@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL maintainer="ghtsto"
+LABEL maintainer="slu125"
 
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG APT_MIRROR="archive.ubuntu.com"
